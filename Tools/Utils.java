@@ -976,52 +976,24 @@ public final class Utils {
             }
         }
     }
-//static void TDMA(final double[] in, final double[] out,final double[] scratch,final int xDim, final int yDim, final boolean xAxis, final int iRow, final double diffRate,final double boundaryValue){
-//    int len=xAxis?xDim:yDim;
-//    int max=xAxis?yDim:xDim;
-//    //forward pass
-//    scratch[0]=diffRate;
-//
-//    double above=iRow==max-1?boundaryValue:in[_GetTDMAi(0,iRow+1,yDim,xAxis)];
-//    double below=iRow==0?boundaryValue:in[_GetTDMAi(0,iRow-1,yDim,xAxis)];
-//    scratch[len] = -(above+below)/4*diffRate;
-//
-//    for (int i = 1; i < len-2; i++) {
-//        scratch[i]=diffRate/(-4*diffRate)-(diffRate*scratch[i-1]);
-//
-//        above=iRow==max-1?boundaryValue:in[_GetTDMAi(i,iRow+1,yDim,xAxis)];
-//        below=iRow==0?boundaryValue:in[_GetTDMAi(i,iRow-1,yDim,xAxis)];
-//        scratch[len+i]=-(above+below)-diffRate*scratch[len+i-1]/(-4*diffRate-diffRate*scratch[i-1]);
-//
-//    }
-//
-//    above=iRow==max-1?boundaryValue:in[_GetTDMAi(len-1,iRow+1,yDim,xAxis)];
-//    below=iRow==0?boundaryValue:in[_GetTDMAi(len-1,iRow-1,yDim,xAxis)];
-//    scratch[len*2-1]=-(above+below)-diffRate*scratch[len*2-2]/(-4*diffRate-diffRate*scratch[len-2]);
-
-//    out[_GetTDMAi(len-1,iRow,yDim,xAxis)]=scratch[len*2-1];
-//    for (int i = len-2; i >=0 ; i--) {
-//        out[_GetTDMAi(i,iRow,yDim,xAxis)]=scratch[len+i]-scratch[i]*out[i+1];
-//    }
-//}
 
     static void TDMA(final double[] in, final double[] out,final double[] scratch,final int xDim, final int yDim, final boolean xAxis, final int iRow, final double diffRate,final double boundaryValue){
         int len=xAxis?xDim:yDim;
         int max=xAxis?yDim:xDim;
         //Doing the 0 entries
-        scratch[0]=diffRate/(-4*diffRate);
+        scratch[0]=1.0/(-4*1.0);
         double above=iRow==max-1?boundaryValue:in[_GetTDMAi(0,iRow+1,yDim,xAxis)];
         double below=iRow==0?boundaryValue:in[_GetTDMAi(0,iRow-1,yDim,xAxis)];
-        scratch[len] = -(above+below)/(-4*diffRate);
+        scratch[len] = -(above+below)/(-4*1.0);
 
         //Doing the forward passes
         for (int i = 1; i < len-1; i++) {
-            scratch[i]=diffRate/(-4*diffRate-diffRate*scratch[i-1]);
+            scratch[i]=1.0/(-4*1.0-1.0*scratch[i-1]);
         }
         for (int i = 1; i < len; i++) {
             above = iRow == max - 1 ? boundaryValue : in[_GetTDMAi(i, iRow + 1, yDim, xAxis)];
             below = iRow == 0 ? boundaryValue : in[_GetTDMAi(i, iRow - 1, yDim, xAxis)];
-            scratch[len + i] = (-(above + below) - diffRate * scratch[len + i - 1]) / (-4 * diffRate - diffRate * scratch[i - 1]);
+            scratch[len + i] = (-(above + below) - 1.0 * scratch[len + i - 1]) / (-4 * 1.0 - 1.0 * scratch[i - 1]);
         }
 
         //backward pass
@@ -1030,34 +1002,37 @@ public final class Utils {
             out[_GetTDMAi(i,iRow,yDim,xAxis)]=scratch[len+i]-scratch[i]*out[_GetTDMAi(i+1,iRow,yDim,xAxis)];
         }
     }
-    static int _GetTDMAi(final int x,final int y,final int yDim,final boolean xAxis){ return xAxis?x*yDim+y:y*yDim+x; }
-//    static void TDMA(final double[] in, final double[] out,final double[] scratch,final int xDim, final int yDim, final boolean xAxis, final int iRow, final double diffRate,final double boundaryValue){
-//        int len=xAxis?xDim:yDim;
-//        int max=xAxis?yDim:xDim;
-//        //forward pass
-//        scratch[0]=diffRate/(-4*diffRate);
-//        double above=iRow==max-1?-boundaryValue:-in[_GetTDMAi(0,iRow+1,yDim,xAxis)];
-//        double below=iRow==0?-boundaryValue:-in[_GetTDMAi(0,iRow-1,yDim,xAxis)];
-//        scratch[len] = (above+below)/(-4*diffRate);
+//    int len=xAxis?xDim:yDim;
+//    int max=xAxis?yDim:xDim;
+//    //Doing the 0 entries
+//    scratch[0]=diffRate/(-4*diffRate);
+//    double above=iRow==max-1?boundaryValue:in[_GetTDMAi(0,iRow+1,yDim,xAxis)];
+//    double below=iRow==0?boundaryValue:in[_GetTDMAi(0,iRow-1,yDim,xAxis)];
+//    scratch[len] = -(above+below)/(-4*diffRate);
 //
-//        for (int i = 1; i < len; i++) {
-//            final double denom=1.0/(-4*diffRate-diffRate*scratch[i-1]);
-//            scratch[i]=diffRate/denom;
-//            above=iRow==max-1?-boundaryValue:-in[_GetTDMAi(i,iRow+1,yDim,xAxis)];
-//            below=iRow==0?-boundaryValue:-in[_GetTDMAi(i,iRow-1,yDim,xAxis)];
-//            scratch[len+i]=((above+below)-diffRate*scratch[len+i-1])/denom;
-//
-//        }
-//
-//        out[_GetTDMAi(len-1,iRow,yDim,xAxis)]=scratch[len*2-1];
-//        for (int i = len-2; i >=0 ; i--) {
-//            out[_GetTDMAi(i,iRow,yDim,xAxis)]=scratch[len+i]-scratch[i]*out[_GetTDMAi(i+1,iRow,yDim,xAxis)];
-//        }
+//    //Doing the forward passes
+//        for (int i = 1; i < len-1; i++) {
+//        scratch[i]=diffRate/(-4*diffRate-diffRate*scratch[i-1]);
 //    }
+//        for (int i = 1; i < len; i++) {
+//        above = iRow == max - 1 ? boundaryValue : in[_GetTDMAi(i, iRow + 1, yDim, xAxis)];
+//        below = iRow == 0 ? boundaryValue : in[_GetTDMAi(i, iRow - 1, yDim, xAxis)];
+//        scratch[len + i] = (-(above + below) - diffRate * scratch[len + i - 1]) / (-4 * diffRate - diffRate * scratch[i - 1]);
+//    }
+//
+//    //backward pass
+//    out[_GetTDMAi(len-1,iRow,yDim,xAxis)]=scratch[len*2-1];
+//        for (int i = len-2; i >=0 ; i--) {
+//        out[_GetTDMAi(i,iRow,yDim,xAxis)]=scratch[len+i]-scratch[i]*out[_GetTDMAi(i+1,iRow,yDim,xAxis)];
+//    }
+    static int _GetTDMAi(final int x,final int y,final int yDim,final boolean xAxis){ return xAxis?x*yDim+y:y*yDim+x; }
     public static void DiffusionADI2(boolean xAxis,final double[]inGrid, final double[]outGrid,final double[]scratch,final int xDim,final int yDim,final double diffRate,final double boundaryValue) {
         int len=xAxis?yDim:xDim;
         for (int i = 0; i < len; i++) {
             TDMA(inGrid, outGrid, scratch, xDim, yDim, xAxis, i, diffRate, boundaryValue);
+        }
+        for (int i = 0; i < inGrid.length; i++) {
+            outGrid[i]=inGrid[i]+outGrid[i]*diffRate;
         }
     }
 }
