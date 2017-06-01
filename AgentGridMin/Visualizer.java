@@ -127,6 +127,8 @@ public class Visualizer extends JPanel{
             FileOutputStream out=new FileOutputStream(path);
             out.write(12);
             try {
+                Graphics2D gOut=buff.createGraphics();
+                paint2(gOut);
                 if(!ImageIO.write(buff, "gif", out)){
                     System.err.println("unable to write image to path"+path);
                 }
