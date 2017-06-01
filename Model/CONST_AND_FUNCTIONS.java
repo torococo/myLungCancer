@@ -21,9 +21,9 @@ public class CONST_AND_FUNCTIONS {
     static final boolean ACID_ACTIVE=true;
     static final boolean DRUG_ACTIVE=true;
 
-    static final int SEED_TIME = 500;
-    static final int IMMUNE_TIME = 700;
-    static final int DRUG_TIME = 2000;
+    static final int SEED_TIME = 200;
+    static final int IMMUNE_TIME = 400;
+    static final int DRUG_TIME = 800;
     static final int STOP_MODEL_TIME=200000;
 
     static final double BIN_LENGTH = 10.0; //microns

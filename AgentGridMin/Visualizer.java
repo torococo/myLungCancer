@@ -3,6 +3,7 @@ package AgentGridMin;
 import Model.CONST_AND_FUNCTIONS;
 import Model.CONST_AND_FUNCTIONS.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -10,6 +11,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.FileOutputStream;
 import java.util.Arrays;
 
 /**
@@ -106,6 +108,10 @@ public class Visualizer extends JPanel{
         ((Graphics2D)g).drawImage(buff.getScaledInstance(scale*xDim,scale*yDim,Image.SCALE_FAST),null,null);
         repaint();
     }
+    public Graphics2D paint2(Graphics g){
+        ((Graphics2D)g).drawImage(buff.getScaledInstance(scale*xDim,scale*yDim,Image.SCALE_FAST),null,null);
+        return (Graphics2D)g;
+    }
     //public void Draw(){
         //BufferStrategy bs=this.getBufferStrategy();
         //Graphics g=bs.getDrawGraphics();
@@ -114,4 +120,32 @@ public class Visualizer extends JPanel{
         //g.dispose();
         //bs.show();
     //}
+
+
+    void WriteOut(String path,String type){
+        try {
+            FileOutputStream out=new FileOutputStream(path);
+            out.write(12);
+            try {
+                if(!ImageIO.write(buff, "gif", out)){
+                    System.err.println("unable to write image to path"+path);
+                }
+                out.close();
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void ToPNG(String path){
+        WriteOut(path,"PNG");
+    }
+    public void ToJPG(String path){
+        WriteOut(path,"JPG");
+    }
+    public void ToGIF(String path){
+        WriteOut(path,"GIF");
+    }
 }

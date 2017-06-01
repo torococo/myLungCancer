@@ -447,11 +447,27 @@ public class ModelMain {
                     greyView.SetColorBound(x,y,tot,tot,tot);
                 }
             }
-            if(firstModel.tick==1000){
-                tumorView.ToGIF("test.gif");
-                tumorView.ToPNG("test.png");
-                tumorView.ToJPG("test.jpg");
-                System.out.println("wrote image");
+            if(firstModel.tick==500){
+                double pdl1Sum=0;
+                double tumorSum=0;
+                for (double pop : firstModel.PDL1TumorCells.pops) {
+                    pdl1Sum+=pop;
+                }
+                for(double pop: firstModel.tumorCells.pops){
+                    tumorSum+=pop;
+                }
+                double total=pdl1Sum+tumorSum;
+                Tools.FileIO csvOut=new Tools.FileIO("TumorProp_"+tumorSum/total+"_pdl1Prop_"+pdl1Sum/total+".csv","w");
+                for (int x = 0; x < firstModel.xDim; x++) {
+                    for (int y = 0; y < firstModel.yDim; y++) {
+                        String delim=y==firstModel.yDim-1?"":",";
+                       csvOut.Write(Utils.BoundVal(firstModel.totalPops[x*firstModel.yDim+y]/CONST_AND_FUNCTIONS.MAX_POP,0,1)+delim);
+                    }
+                    csvOut.Write("\n");
+                }
+                firstModel.tumorCells.myVis.ToGIF("test.gif");
+                csvOut.Close();
+                System.out.println("wrote densities");
             }
         }
     }
